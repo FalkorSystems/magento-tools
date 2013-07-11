@@ -5,4 +5,8 @@ name_stream = open( '/var/www/learn.iheartengineering.com/extensions/YAML/data/p
 names = yaml.load( name_stream )
 
 for sku, name in names.items():
-    print "%s,%s" % (sku, name)
+    try:
+        print "%s,%s" % (sku, name)
+    except:
+	print "%s,error" % (sku)
+
