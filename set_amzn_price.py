@@ -3,9 +3,11 @@
 import xmlrpclib
 import yaml
 import csv
+import getpass
 
 server = xmlrpclib.ServerProxy( "http://store.iheartengineering.com/index.php/api/xmlrpc" )
-session = server.login( 'api', 'testtest1' )
+password = getpass.getpass( "Enter API Password": )
+session = server.login( 'api', password )
 
 pricefile = open( 'amazon_prices.csv', 'rb' )
 amazon_price_list = {}
