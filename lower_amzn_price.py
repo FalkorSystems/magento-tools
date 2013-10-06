@@ -7,8 +7,8 @@ import yaml
 import csv
 import getpass
 
-server = xmlrpclib.ServerProxy( "http://store.iheartengineering.com/index.php/api/xmlrpc" )
-password = getpass.getpass( "Enter API Password": )
+server = xmlrpclib.ServerProxy( "http://www.iheartengineering.com/index.php/api/xmlrpc" )
+password = getpass.getpass( "Enter API Password:" )
 session = server.login( 'api', password )
 
 
