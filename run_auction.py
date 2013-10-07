@@ -39,18 +39,22 @@ for product in product_list:
             print "WARNING: %s doesn't have a special price yet" % sku
             special_price = regular_price
 
-        special_to_date = datetime.strptime(product_info['special_to_date'], '%Y-%m-%d %H:%M:%S')
+	if not product_info['special_to_date']:
+	    print "WARNING: %s has no special_to_date, setting to regular_price" % sku
+	    special_price = regular_price
+	else:
+            special_to_date = datetime.strptime(product_info['special_to_date'], '%Y-%m-%d %H:%M:%S')
 
-        if special_to_date < now:
-            print "WARNING: %s special price is expired. Resetting" % sku
-            special_price = regular_price
+            if special_to_date < now:
+                print "WARNING: %s special price is expired. Resetting" % sku
+                special_price = regular_price
 
         final_price = regular_price * 0.01
         final_factor = final_price / special_price
         factor = math.exp(math.log(final_factor)/deltahours)
 
         new_special_price = special_price * factor
-        print "Setting new special price for %s by factor %6.6f to %4.2f from %4.2f" % ( sku,
+        print "Setting new special price for %s by factor %6.6f from %4.2f to %4.2f" % ( sku,
                                                                                          factor,
                                                                                          special_price,
                                                                                          new_special_price )
@@ -63,4 +67,4 @@ for product in product_list:
                        'special_to_date': tomorrow,
                        'special_from_date': yesterday }]
         print parms
-        result = server.call( session, 'catalog_product.update', parms )
+        #result = server.call( session, 'catalog_product.update', parms )
