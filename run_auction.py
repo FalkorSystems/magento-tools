@@ -59,6 +59,7 @@ for product in product_list:
         tomorrow = (now+oneday).strftime('%Y-%m-%d %H:%M:%S')
 
         parms = [sku, {'special_price': "%4.2f" % new_special_price,
+		       'amazon_price': "%4.2f" % new_special_price,
                        'special_to_date': tomorrow,
                        'special_from_date': yesterday }]
         print parms
