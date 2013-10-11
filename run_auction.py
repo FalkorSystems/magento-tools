@@ -63,4 +63,11 @@ for product in product_list:
                        'special_to_date': tomorrow,
                        'special_from_date': yesterday }]
         print parms
-        result = server.call( session, 'catalog_product.update', parms )
+        keep_trying = True
+        while keep_trying:
+            try:
+                result = server.call( session, 'catalog_product.update', parms )
+                keep_trying = False
+            except xmlrpclib.Fault as e:
+                print "Error: %s" % e
+                keep_trying = True
