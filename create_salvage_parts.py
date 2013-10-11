@@ -22,19 +22,31 @@ for product in catalog:
 salvage_file = open( 'catalog.csv', 'rb' )
 rows = csv.reader( salvage_file )
 for row in rows:
-    sku = 'IHE-RD-%06d' % float(row[1])
+    sku = 'IHE-RD-000%s' % row[1]
     description = "%s (Lot of %d)" % (row[4], float(row[3]))
+    weight_str = row[10]
+    # strip g off end
+    weight, g = float(weight_str[:-1]), weight_str[-1]
+    if g != 'g':
+        weight = 1
+    else:
+        weight = weight * 0.00220462
+        if weight < 0.1:
+            weight = 0.1
+
     parameters = { 'name': description,
                    'websites': ['1'],
                    'short_description': description,
-                   'description': "<P>Lot Size: %d</P><P>More information: <a href=\"%s\">%s</a></p><p>Manufacturer: %s</p><p>Distributor: %s</p><p>MPN: %s</p><p>DPN: %s</p>" %
-                   (float(row[3]), row[5], row[5], row[6], row[7], row[8], row[9] ),
+                   'description': "<P>Lot Size: %d</P><P>More information: <a href=\"%s\">%s</a></p><p>Manufacturer: %s</p><p>Distributor: %s</p><p>MPN: %s</p><p>DPN: %s</p><p>Weight: %5.2f lbs</p>" %
+                   (float(row[3]), row[5], row[5], row[6], row[7], row[8], row[9], weight ),
                    'status': '1',
-                   'weight': row[11],
+                   'weight': weight,
                    'tax_class_id': '2',
                    'categories': ['71', '72'],
-                   'price': row[14]
+                   'price': row[13]
                    } 
+
+    print yaml.dump( parameters )
 
     if sku not in sku_index:
         print "Creating: %s:%s" % (sku,description)
@@ -47,19 +59,23 @@ for row in rows:
         print "Updating: %s:%s" % (sku,description)
         server.call( session, 'catalog_product.update', [ sku, parameters ] )
 
-    imagename = "%d.JPG" % (float(row[1]))
-    imagedata = open( imagedirectory + "/" + imagename, "r" ).read()
-    image = { 'file': { 'name': imagename,
-                        'content': base64.b64encode( imagedata ),
-                        'mime': 'image/jpeg' 
-                        },
-              'label': 'Image',
-              'position': 1,
-              'types': [ 'small_image', 'image', 'thumbnail' ],
-              'exclude': 0 }
+    imagename = "%s.JPG" % row[1]
+    try:
+        imagedata = open( imagedirectory + "/" + imagename, "r" ).read()
+    except IOError as e:
+        print "WARNING: Error opening image: %s : %s" % (imagename, e)
+    else:
+        image = { 'file': { 'name': imagename,
+                            'content': base64.b64encode( imagedata ),
+                            'mime': 'image/jpeg' 
+                            },
+                  'label': 'Image',
+                  'position': 1,
+                  'types': [ 'small_image', 'image', 'thumbnail' ],
+                  'exclude': 0 }
     
-    print "Uploading image for %s:%s - %s" % (sku, description, imagename)
-    imagefilename = server.call( session, 'catalog_product_attribute_media.create', [sku, image])
+        print "Uploading image for %s:%s - %s" % (sku, description, imagename)
+        imagefilename = server.call( session, 'catalog_product_attribute_media.create', [sku, image])
 
     inventory = row[2]
     update = [ sku, { 'qty': inventory,
