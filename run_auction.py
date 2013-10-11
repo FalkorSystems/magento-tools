@@ -33,16 +33,21 @@ for product in product_list:
         print "Warning: unable to get product %s" % sku
     else:
         regular_price = float(product_info['price'])
+        if regular_price == 0.0:
+            print "Warning: %s has 0 price" % sku
+            continue
+
         try:
             special_price = float(product_info['special_price'])
         except TypeError as e:
             print "WARNING: %s doesn't have a special price yet" % sku
             special_price = regular_price
 
-        if product_info['special_to_date'] != None:
+	if not product_info['special_to_date']:
+	    print "WARNING: %s has no special_to_date, setting to regular_price" % sku
+	    special_price = regular_price
+	else:
             special_to_date = datetime.strptime(product_info['special_to_date'], '%Y-%m-%d %H:%M:%S')
-        else:
-            special_to_date = datetime(2013,1,1)
 
         if special_to_date < now:
             print "WARNING: %s special price is expired. Resetting" % sku
@@ -53,7 +58,7 @@ for product in product_list:
         factor = math.exp(math.log(final_factor)/deltahours)
 
         new_special_price = special_price * factor
-        print "Setting new special price for %s by factor %6.6f to %4.2f from %4.2f" % ( sku,
+        print "Setting new special price for %s by factor %6.6f from %4.2f to %4.2f" % ( sku,
                                                                                          factor,
                                                                                          special_price,
                                                                                          new_special_price )
@@ -69,7 +74,7 @@ for product in product_list:
         keep_trying = True
         while keep_trying:
             try:
-#                result = server.call( session, 'catalog_product.update', parms )
+                result = server.call( session, 'catalog_product.update', parms )
                 keep_trying = False
             except xmlrpclib.Fault as e:
                 print "Error: %s" % e
