@@ -39,7 +39,10 @@ for product in product_list:
             print "WARNING: %s doesn't have a special price yet" % sku
             special_price = regular_price
 
-        special_to_date = datetime.strptime(product_info['special_to_date'], '%Y-%m-%d %H:%M:%S')
+        if product_info['special_to_date'] != None:
+            special_to_date = datetime.strptime(product_info['special_to_date'], '%Y-%m-%d %H:%M:%S')
+        else:
+            special_to_date = datetime(2013,1,1)
 
         if special_to_date < now:
             print "WARNING: %s special price is expired. Resetting" % sku
@@ -66,7 +69,7 @@ for product in product_list:
         keep_trying = True
         while keep_trying:
             try:
-                result = server.call( session, 'catalog_product.update', parms )
+#                result = server.call( session, 'catalog_product.update', parms )
                 keep_trying = False
             except xmlrpclib.Fault as e:
                 print "Error: %s" % e
