@@ -79,6 +79,12 @@ for row in rows:
 
     inventory = row[2]
     update = [ sku, { 'qty': inventory,
+                      'manage_stock': 1,
+                      'use_config_manage_stock': 1,
+                      'backorders': 0,
+                      'use_config_backorders': 0,
+                      'notify_stock_qty': 10,
+                      'use_config_notify_stock_qty': 0,
                       'is_in_stock': 1 } ]
     print "Updating %s:%s with stock %d" % (sku, description, float(inventory))
     server.call( session, 'cataloginventory_stock_item.update', update )
