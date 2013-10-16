@@ -25,6 +25,7 @@ for row in rows:
     sku = 'IHE-RD-000%s' % row[1]
     description = "%s (Lot of %d)" % (row[4], float(row[3]))
     weight_str = row[10]
+    condition = row[16]
     # strip g off end
     weight, g = float(weight_str[:-1]), weight_str[-1]
     if g != 'g':
@@ -37,8 +38,8 @@ for row in rows:
     parameters = { 'name': description,
                    'websites': ['1'],
                    'short_description': description,
-                   'description': "<P>Lot Size: %d</P><P>More information: <a href=\"%s\">%s</a></p><p>Manufacturer: %s</p><p>Distributor: %s</p><p>MPN: %s</p><p>DPN: %s</p><p>Weight: %5.2f lbs</p>" %
-                   (float(row[3]), row[5], row[5], row[6], row[7], row[8], row[9], weight ),
+                   'description': "<P>Lot Size: %d</P><P>More information: <a href=\"%s\">%s</a></p><p>Manufacturer: %s</p><p>Distributor: %s</p><p>MPN: %s</p><p>DPN: %s</p><p>Weight: %5.2f lbs</p><p>Condition: %s</p>" %
+                   (float(row[3]), row[5], row[5], row[6], row[7], row[8], row[9], weight, condition ),
                    'status': '1',
                    'weight': weight,
                    'tax_class_id': '2',
