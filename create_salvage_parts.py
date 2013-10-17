@@ -55,10 +55,23 @@ for row in rows:
                  attribute_set,
                  sku,
                  parameters ]
-        server.call( session, 'catalog_product.create', part )
+        keep_trying = True
+        while keep_trying:
+            try:
+                server.call( session, 'catalog_product.create', part )
+                keep_trying = False
+            except xmlrpclib.Fault as e:
+                print "WARNING: Error: %s" % e
+
     else:
         print "Updating: %s:%s" % (sku,description)
-        server.call( session, 'catalog_product.update', [ sku, parameters ] )
+        keep_trying = Tru
+        while keep_trying:
+            try:
+                server.call( session, 'catalog_product.update', [ sku, parameters ] )
+                keep_trying = False
+            except xmlrpclib.Fault as e:
+                print "WARNING: Error: %s" % e
 
     imagename = "%s.JPG" % row[1]
     try:
@@ -76,7 +89,13 @@ for row in rows:
                   'exclude': 0 }
     
         print "Uploading image for %s:%s - %s" % (sku, description, imagename)
-        imagefilename = server.call( session, 'catalog_product_attribute_media.create', [sku, image])
+        keep_trying = True
+        while keep_trying:
+            try:
+                imagefilename = server.call( session, 'catalog_product_attribute_media.create', [sku, image])
+                keep_trying = False
+            except xmlrpclib.Fault as e:
+                print "WARNING: Error: %s" % e
 
     inventory = row[2]
     update = [ sku, { 'qty': inventory,
@@ -88,7 +107,13 @@ for row in rows:
                       'use_config_notify_stock_qty': 0,
                       'is_in_stock': 1 } ]
     print "Updating %s:%s with stock %d" % (sku, description, float(inventory))
-    server.call( session, 'cataloginventory_stock_item.update', update )
+    keep_trying = True
+    while keep_trying:
+        try:
+            server.call( session, 'cataloginventory_stock_item.update', update )
+            keep_trying = False
+        except xmlrpclib.Fault as e:
+            print "WARNING: Error: %s" % e
 
 
 
